@@ -13,7 +13,66 @@ const handleLogout=()=>{
 
 <template>
     <header v-if="route.name!='notFound'">
-        <div class="upper">
+
+        <div class="admin-header" v-if="$store.state.authenticated && $store.getters.userPrevilage==='admin'">
+            <div class="middle">
+                <div class="logo">
+                    <router-link :to="{name:'home'}"><img src="../image/4.png" alt=""></router-link>
+                </div>
+
+                <div class="others">
+                    <div class="user-account">
+                        <div class="dropdown-cont">
+
+                            <div class="image" v-if="$store.getters.userProfile">
+                                <img :src="$store.getters.userProfile" alt="">
+                            </div>
+
+                            <div class="image" v-else>
+                                <img src="../image/users2.png" alt="">
+                            </div>
+
+                            <div class="dropdownContent">
+                                <ul>
+                                    <li>
+                                        <a href="#">Edit Profile</a>
+                                    </li>
+                                    <div class="logout">
+                                        <form @submit.prevent="handleLogout">
+                                            <button>Log Out</button>
+                                        </form>
+                                    </div>
+
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="navigations">
+                <ul>
+                    <li>
+                        <router-link :to="{name:'Create'}">Post Product</router-link>
+                    </li>
+                    <li>
+                        <router-link :to="{name:'Users'}">All Users</router-link>
+                    </li>
+                    <li>
+                        <router-link :to="{name:'OnlineProducts'}">Online Products</router-link>
+                    </li>
+                    <li>
+                        <router-link :to="{name:'UsersOrders'}">User Orders</router-link>
+                    </li>
+                    <li>
+                        <router-link :to="{name:'SoldItems'}">Sold Items</router-link>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+
+        <div class="normal-user-header-container" v-else>
+            <div class="upper">
             <div class="left">
                 <div class="phonenumber">
                     <i><img src="../image/phone.png" alt=""></i>
@@ -84,9 +143,6 @@ const handleLogout=()=>{
         <div class="navigations">
             <ul v-if="$store.state.authenticated">
                 <li>
-                    <router-link :to="{name:'Create'}">Post Product</router-link>
-                </li>
-                <li>
                     <router-link :to="{name:'home'}">Home</router-link>
                 </li>
                 <li>
@@ -105,5 +161,11 @@ const handleLogout=()=>{
                 </li>
             </ul>
         </div>
+
+        </div>
+
+
+
+        
     </header>
 </template>

@@ -67,11 +67,12 @@ const routes = [{
         }
     },
     {
-        path:'/carts',
-        name:'carts',
-        component:()=>import('../pages/product/carts.vue'),
-        meta:{
-            requiresAuth:true
+        path: '/carts',
+        name: 'carts',
+        component: () =>
+            import ('../pages/product/carts.vue'),
+        meta: {
+            requiresAuth: true
         }
     },
     {
@@ -81,6 +82,42 @@ const routes = [{
             import ('../pages/NotFound.vue'),
         meta: {
             requiresAuth: false
+        }
+    },
+    {
+        path: '/users',
+        name: 'Users',
+        component: () =>
+            import ('../pages/admin/AllUser.vue'),
+        meta: {
+            requiresAuth: true
+        }
+    },
+    {
+        path: '/OnlineProducts',
+        name: 'OnlineProducts',
+        component: () =>
+            import ('../pages/admin/AllProducts.vue'),
+        meta: {
+            requiresAuth: true
+        }
+    },
+    {
+        path: '/usersOrders',
+        name: 'UsersOrders',
+        component: () =>
+            import ('../pages/admin/AllOrders.vue'),
+        meta: {
+            requiresAuth: true
+        }
+    },
+    {
+        path: '/SoldItems',
+        name: 'SoldItems',
+        component: () =>
+            import ('../pages/admin/AllSoldItems.vue'),
+        meta: {
+            requiresAuth: true
         }
     }
 ]

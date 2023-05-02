@@ -8,6 +8,9 @@ import { useRouter } from "vue-router";
 import PopUp from '../../components/PopUp.vue';
 import SearchEngine from '../../components/SearchEngine.vue'
 import Empty from '../../components/Empty.vue';
+import VPagination from "@hennge/vue3-pagination";
+import "@hennge/vue3-pagination/dist/vue3-pagination.css";
+
 
 const forPopUp=ref({
     message:'!',
@@ -16,6 +19,7 @@ const forPopUp=ref({
     title:'',
     typeMessage:''
 })
+
 
 const router=useRouter()
 
@@ -35,6 +39,18 @@ onMounted(async() => {
         }, 1000);
     }
 })
+
+const getItems=async ()=>{
+    await store.dispatch('getAllItems')
+    store.commit('readLikeItem')
+    store.commit('setSearchInput','')
+    store.commit('calculateTotalRating')
+    if(store.getters.allItems){
+        setTimeout(() => {
+            showLoader.value=false
+        }, 1000);
+    }
+}
 
 const handleAddToCartItem=(result)=>{
     cartItem.value=result.cartItem
@@ -88,7 +104,15 @@ const exitDefault=()=>{
     <div class="noResult" v-else>
         <Empty message="No Search Result..."/>
     </div>
-    <div class="paginationLink">
+    <div class="paginationLink" v-if="store.getters.GrandFilter(1).length>0">
+
+        <v-pagination
+            v-model="store.state.itemPage"
+            :pages="store.state.itemPageCount"
+            :range-size="1"
+            active-color="rgb(218, 92, 9)"
+            @update:modelValue="getItems"
+        />
         
     </div>
 </template>

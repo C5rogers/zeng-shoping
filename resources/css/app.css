@@ -35,7 +35,8 @@ body {
     position: relative;
     overflow: hidden;
 }
-.scrollBars{
+
+.scrollBars {
     position: fixed;
     top: 1em;
     left: 1em;
@@ -275,6 +276,7 @@ header .navigations ul li {
     border-radius: .5em;
     transition: all ease-in-out .22s;
     place-items: center;
+    margin-top: .5em;
 }
 
 header .navigations ul li>a {
@@ -1884,6 +1886,20 @@ input::-webkit-inner-spin-button {
 
 
 /* end of order show for user */
+
+
+/* for pagination link */
+
+.paginationLink {
+    width: 100%;
+    padding: .5em 1em;
+    display: flex;
+    justify-content: center;
+    place-items: center;
+}
+
+
+/* for pagination link end */
 
 
 /* footer  */

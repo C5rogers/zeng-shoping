@@ -26,8 +26,12 @@ export const store = createStore({
         searchInput: '',
         OrderQueue: [],
         totalItemRating: 0,
+        itemPage: 1,
+        itemPageCount: null,
+        userPrevilage: localStorage.getItem('USER_AUTH') ? localStorage.getItem('USER_AUTH') : null
     },
     getters: {
+        userPrevilage: state => state.userPrevilage,
         user: state => state.authUser,
         errors: state => state.authError,
         loginErrors: state => state.loginError,
@@ -44,13 +48,13 @@ export const store = createStore({
         GrandFilter: (state) => (payload) => {
             switch (payload) {
                 case 1:
-                    if (state.searchInput !== 'All') {
+                    if (state.searchInput !== 'All' && state.searchInput !== 'all') {
                         return state.allItems.filter((item) => item.name.includes(state.searchInput) || item.description.includes(state.searchInput) || item.price == state.searchInput || item.catagory.includes(state.searchInput) || item.id == state.searchInput || item.brand.includes(state.searchInput))
                     } else {
                         return state.allItems
                     }
                 case 2:
-                    if (state.searchInput !== 'All') {
+                    if (state.searchInput !== 'All' && state.searchInput !== 'all') {
                         return state.carts.filter((cart) => cart.name.includes(state.searchInput) || cart.catagory.includes(state.searchInput) || cart.price == state.searchInput || cart.brand.includes(state.searchInput) || cart.id == state.searchInput || cart.brand.includes(state.searchInput))
                     } else {
                         return state.carts
@@ -76,6 +80,9 @@ export const store = createStore({
 
     },
     mutations: {
+        setUserPrevilage: (state, payload) => {
+            state.userPrevilage = payload
+        },
         calculateTotalRating: (state) => {
             var sum = 0
             state.allItems.forEach(item => {
@@ -179,8 +186,9 @@ export const store = createStore({
         },
         async getAllItems(context) {
             try {
-                const result = await axios.get('item')
-                context.commit('setAllItems', result.data)
+                const result = await axios.get('item?page=' + context.state.itemPage)
+                context.state.itemPageCount = parseInt(result.data.total / result.data.to)
+                context.commit('setAllItems', result.data.data)
             } catch (error) {
                 console.log(error)
             }
@@ -255,6 +263,8 @@ export const store = createStore({
                     .then(result => {
                         if (result.status == 201 && result.data && result.data.token) {
                             localStorage.setItem('ZENG_SHOPING_AUTH_TOKEN', result.data.token)
+                            localStorage.setItem('USER_AUTH', result.data.user.authority)
+                            context.commit('setUserPrevilage', result.data.user.authority)
                             context.commit('setUser', result.data.user)
                             context.commit('changeAuthentcated', true)
                             if (result.data.user.profile) {
@@ -279,6 +289,8 @@ export const store = createStore({
                 const result = await axios.post('login', form)
                 if (result.status == 201 && result.data && result.data.token) {
                     localStorage.setItem('ZENG_SHOPING_AUTH_TOKEN', result.data.token)
+                    localStorage.setItem('USER_AUTH', result.data.user.authority)
+                    context.commit('setUserPrevilage', result.data.user.authority)
                     context.commit('changeAuthentcated', true)
                     context.commit('setUser', result.data.user)
                     if (result.data.user.profile) {
@@ -317,7 +329,9 @@ export const store = createStore({
                 .then(result => {
                     localStorage.removeItem('ZENG_SHOPING_AUTH_TOKEN')
                     localStorage.removeItem('USERE_PROFILE')
+                    localStorage.removeItem('USER_AUTH')
                     localStorage.clear()
+                    context.commit('setUserPrevilage', null)
                     context.commit('setUserProfile', null)
                     context.commit('changeAuthentcated', false)
                     router.push({ name: 'home' })
