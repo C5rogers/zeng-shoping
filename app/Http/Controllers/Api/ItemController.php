@@ -7,6 +7,7 @@ use App\Http\Requests\ItemCreateRequest;
 use App\Models\Item;
 use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
+use App\Models\User;
 
 class ItemController extends Controller
 {
@@ -45,38 +46,56 @@ class ItemController extends Controller
      */
     public function update(Request $request, Item $item)
     {
-        $fild=$request->validate([
-            'name'=>['required','string','min:3'],
-            'price'=>['required'],
-            'description'=>['required','string'],
-            'expiredate'=>['required'],
-            'catagory'=>['required','string'],
-            'brand'=>['required','string']
-        ]);
-        if($request->hasFile('image')){
-            $request->validate(['image'=>['file','mimes:png,jpg,gif,jpeg','max:2048']]);
-            $image=$request->file('image')->store('items','public');
-            $imageAddress=str_replace("http://localhost:8000/","",$item->image);
-            File::delete($imageAddress);
-            $image=asset('storage/'.$image);
-            $fild['image']=$image;
+        $admin=User::find($request->user()->id);
+        if($admin && $admin->authority=='admin'){
+            $fild=$request->validate([
+                'name'=>['required','string','min:3'],
+                'price'=>['required'],
+                'description'=>['required','string'],
+                'expiredate'=>['required'],
+                'catagory'=>['required','string'],
+                'brand'=>['required','string']
+            ]);
+            if($request->hasFile('image')){
+                $request->validate(['image'=>['file','mimes:png,jpg,gif,jpeg','max:2048']]);
+                $image=$request->file('image')->store('items','public');
+                $imageAddress=str_replace("http://localhost:8000/","",$item->image);
+                File::delete($imageAddress);
+                $image=asset('storage/'.$image);
+                $fild['image']=$image;
+            }
+            $item->update($fild);
+            return response([
+                'item'=>$item,
+                'status'=>200
+            ]);
         }
-        $item->update($fild);
+
         return response([
-            'item'=>$item,
-            'status'=>200
+            "errorMessage"=>"You Are Not Authorized!",
+            "status"=>401
         ]);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Item $item)
+    public function destroy(Request $request,Item $item)
     {
-        $imageAddress=str_replace("http://localhost:8000/","",$item->image);
-        File::delete(public_path($imageAddress));
-        $item->delete();
-        return response(['status'=>200]);
+
+        $admin=User::find($request->user()->id);
+        if($admin && $admin->authority=='admin'){
+            $imageAddress=str_replace("http://localhost:8000/","",$item->image);
+            File::delete(public_path($imageAddress));
+            $item->delete();
+            return response(['status'=>200]);
+        }
+
+        return response([
+            "errorMessage"=>"You Are Not Authorized!",
+            "status"=>401
+        ]);
+
     }
 
     public function like(Item $item){

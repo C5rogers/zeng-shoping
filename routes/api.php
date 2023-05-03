@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\ItemController;
@@ -43,11 +44,18 @@ Route::group(['middleware'=>['auth:sanctum']],function(){
     Route::get('/cart',[CartController::class,'index']);
     Route::post('/cart',[CartController::class,'store']);
     Route::put('/cart/{cart}',[CartController::class,'update']);
-
     Route::delete('/cart/{cart}',[CartController::class,'destroy']);
+
     Route::post('/logout',[AuthController::class,'logout']);
     Route::get('/user',[AuthController::class,'getUser']);
+
+    Route::get('/allUsers',[AdminController::class,'getAllUsers']);
+    Route::get('/allOrders',[AdminController::class,'getAllOrders']);
+    Route::get('/allSoldItems',[AdminController::class,'getSoldItems']);
     Route::post('/item',[ItemController::class,'store']);
+    Route::put('/item/{item}',[ItemController::class,'update']);
+    Route::delete('/item/{item}',[ItemController::class,'destroy']);
+
 
 });
 

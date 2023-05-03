@@ -28,9 +28,17 @@ export const store = createStore({
         totalItemRating: 0,
         itemPage: 1,
         itemPageCount: null,
-        userPrevilage: localStorage.getItem('USER_AUTH') ? localStorage.getItem('USER_AUTH') : null
+        userPrevilage: localStorage.getItem('USER_AUTH') ? localStorage.getItem('USER_AUTH') : null,
+        allUsers: [],
+        allOrders: [],
+        allOrderRequests: [],
+        allSoldItems: [],
     },
     getters: {
+        allSoldItems: state => state.allSoldItems,
+        allOrders: state => state.allOrders,
+        allOrderRequests: state => state.allOrderRequests,
+        allUsers: state => state.allUsers,
         userPrevilage: state => state.userPrevilage,
         user: state => state.authUser,
         errors: state => state.authError,
@@ -80,6 +88,18 @@ export const store = createStore({
 
     },
     mutations: {
+        setAllSoldItems: (state, payload) => {
+            state.allSoldItems = payload
+        },
+        setAllOrders: (state, payload) => {
+            state.allOrders = payload
+        },
+        setAllOrderRequests: (state, payload) => {
+            state.allOrderRequests = payload
+        },
+        setAllUsers: (state, payload) => {
+            state.allUsers = payload
+        },
         setUserPrevilage: (state, payload) => {
             state.userPrevilage = payload
         },
@@ -175,11 +195,51 @@ export const store = createStore({
         },
         readAuthenticatedUer: (state) => {
             state.authenticated = localStorage.getItem('ZENG_SHOPING_AUTH_TOKEN') ? true : false
+        },
+        updateAllItemsItem: (state) => (payload) => {
+            state.allItems.filter((item) => item.id === payload.id ? payload : item);
         }
 
 
     },
     actions: {
+        async getAllSoldItems(context) {
+            try {
+                const responce = await $api.get('allSoldItems')
+                if (responce.status === 200) {
+                    context.commit('setAllSoldItems', responce.data.sold_items)
+                } else {
+                    router.push({ name: 'home' })
+                }
+            } catch (error) {
+                console.log(error)
+            }
+        },
+        async getAllOrders(context) {
+            try {
+                const responce = await $api.get('allOrders')
+                if (responce.status === 200) {
+                    context.commit('setAllOrders', responce.data.orders)
+                    context.commit('setAllOrderRequests', responce.data.orderRequests)
+                } else {
+                    router.push({ name: 'home' })
+                }
+            } catch (error) {
+                console.log(error)
+            }
+        },
+        async getAllUsers(context) {
+            try {
+                const responce = await $api.get('allUsers')
+                if (responce.status === 200) {
+                    context.commit('setAllUsers', responce.data.users)
+                } else {
+                    router.push({ name: 'home' })
+                }
+            } catch (error) {
+                console.log(error)
+            }
+        },
         async getUser(context) {
             const res = await $api.get('user')
             context.commit('setUser', res.data)
@@ -315,7 +375,22 @@ export const store = createStore({
                 if (result.status === 201) {
                     context.commit('appendToAllItems', result.data.item)
                 }
-                router.push({ name: 'Items' })
+                router.push({ name: 'home' })
+            } catch (error) {
+                if (error.response.status === 422) {
+                    context.commit('setItemErrors', error.response.data.errors)
+                } else {
+                    console.log(error)
+                }
+            }
+        },
+        async handleEditItem(context, form) {
+            try {
+                const result = await $api.post(`item/${form.get('id')}?_method=PUT`, form)
+                if (result.status === 200) {
+                    context.commit('updateAllItemsItem', result.data.item)
+                }
+                router.push({ name: 'home' })
             } catch (error) {
                 if (error.response.status === 422) {
                     context.commit('setItemErrors', error.response.data.errors)
@@ -344,11 +419,6 @@ export const store = createStore({
             try {
                 const response = await axios.post(`item/like/${id}`)
                 if (response.status == 200) {
-                    //read from localstorage
-                    //find if it exist 
-                    //append it 
-                    //concatinate it
-                    //write it
                     commit('readLikeItem')
                     const result = state.likedItems.includes(response.data.id) ? true : false
 
@@ -365,11 +435,6 @@ export const store = createStore({
             try {
                 const response = await axios.post(`item/dislike/${id}`)
                 if (response.status == 200) {
-                    //read from localstorage
-                    //find if it exist
-                    //remove it
-                    //concatinate it
-                    //write it
                     commit('readLikeItem')
                     const result = state.likedItems.includes(response.data.id) ? true : false
                     if (result) {

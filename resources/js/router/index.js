@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Home from '../pages/Home.vue'
-import { store } from '../store/store'
-
+import { store } from "../store/store";
 
 const routes = [{
         path: '/',
@@ -98,6 +97,15 @@ const routes = [{
         name: 'OnlineProducts',
         component: () =>
             import ('../pages/admin/AllProducts.vue'),
+        meta: {
+            requiresAuth: true
+        }
+    },
+    {
+        path: '/Product/Edit/:id',
+        name: 'EditProduct',
+        component: () =>
+            import ('../pages/admin/EditProduct.vue'),
         meta: {
             requiresAuth: true
         }

@@ -1,0 +1,172 @@
+:root {
+    --color1: black;
+    --font1: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    --shadow1: 0 0 5px 1px rgba(0, 0, 0, .4);
+    --color2: rgb(218, 92, 9);
+    --color3: rgb(3, 3, 83);
+}
+
+.main-admin-data-container {
+    width: 100%;
+    height: fit-content;
+    padding: 1em;
+    display: flex;
+    flex-direction: column;
+}
+
+.title-bar {
+    width: 100%;
+    padding: 1em;
+    display: flex;
+    place-items: center;
+    background-color: #eee;
+    margin: 1em 0;
+    border-radius: .4em;
+}
+
+.title-bar h3 {
+    font-family: var(--font1);
+    font-weight: bolder;
+    font-size: 2em;
+}
+
+.table {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    place-items: center;
+}
+
+.table table {
+    padding: 0 1em;
+    border-collapse: separate;
+    border-spacing: 0 15px;
+    width: 100%;
+}
+
+.table table thead tr {
+    width: 100%;
+}
+
+.table table thead tr td {
+    font-weight: bolder;
+    font-size: 1em;
+    background-color: #eee;
+    padding: 1em .5em;
+    font-family: var(--font1);
+    text-transform: capitalize;
+}
+
+.table table tbody tr {
+    width: 100%;
+}
+
+.table table tbody tr td {
+    border-bottom: 1px solid grey;
+    padding: 0 .5em;
+    font-size: .8em;
+    font-family: var(--font1);
+    text-transform: capitalize;
+}
+
+.table table tbody tr td .image img {
+    width: 4em;
+}
+
+.table table tbody tr td .other-descriptions .name h2 {
+    font-size: 2em;
+}
+
+.table table tbody tr td .other-descriptions {
+    width: fit-content;
+}
+
+.table table tbody tr td .other-descriptions .catagory h4 {
+    font-weight: bolder;
+    font-size: 1.2em;
+    color: var(--color2);
+}
+
+.number {
+    font-size: .9em;
+    font-weight: bolder;
+}
+
+.withFlex {
+    display: flex;
+    place-items: center;
+    gap: 2em;
+}
+
+.expiredate h4 {
+    font-weight: bolder;
+    color: var(--color2);
+}
+
+.withPrice {
+    font-size: 2em;
+    font-weight: bolder;
+}
+
+.edit>a {
+    width: 7em;
+    padding: .4em 0;
+    display: flex;
+    justify-content: center;
+    place-items: center;
+    text-decoration: none;
+    gap: .4em;
+    background-color: green;
+    font-weight: bolder;
+    color: aliceblue;
+    border-radius: .5em;
+    cursor: pointer;
+}
+
+.edit>a img {
+    filter: invert(100%);
+}
+
+.edit>a:hover {
+    box-shadow: var(--shadow1);
+}
+
+.delete>form button {
+    width: 7em;
+    padding: .4em 0;
+    border: none;
+    display: flex;
+    justify-content: center;
+    place-items: center;
+    border-radius: .5em;
+    gap: .4em;
+    background-color: crimson;
+    color: aliceblue;
+    font-weight: bolder;
+    cursor: pointer;
+}
+
+.delete>form button img {
+    filter: invert(100%);
+}
+
+.delete>form button:hover {
+    box-shadow: var(--shadow1);
+}
+
+@media(max-width:750px) {
+    .edit>a,
+    .delete>form button {
+        width: 5em;
+    }
+    .edit>a img,
+    .delete>form button img {
+        width: 1em;
+    }
+    .table table tbody tr td .other-descriptions .name h2 {
+        font-size: 1em;
+    }
+    .table table tbody tr td .image img {
+        width: 2.5em;
+    }
+}
