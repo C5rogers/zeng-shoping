@@ -9,6 +9,7 @@ use App\Models\Cart;
 use App\Models\Order;
 use App\Models\OrderOrderRequest;
 use App\Models\OrderRequest;
+use App\Models\User;
 
 class OrderController extends Controller
 {
@@ -37,7 +38,8 @@ class OrderController extends Controller
                     $fild['total_price']=$cartItem->total_price;
                     $newOrder=Order::create($fild);
 
-                    $orderRequest=OrderRequest::where('user_id','=',$newOrder->user_id)->first();
+                    $orderRequest=OrderRequest::where('user_id','=',$newOrder->user_id)->latest()->first();
+                    
                     $fildTwo['order_id']=$newOrder->id;
                     $fildTwo['order_request_id']=$orderRequest->id;
                     OrderOrderRequest::create($fildTwo);
@@ -50,21 +52,35 @@ class OrderController extends Controller
 
     }
 
-    public function destroy(OrderRequest $orderRequest){
+    public function destroy(Request $request,OrderRequest $orderRequest){
 
 
-        //geting deleted orders from the table
-        $deletedOrderId=OrderOrderRequest::select('order_id')
-                            ->where('order_request_id','=',$orderRequest->id)
-                            ->get();
+        //this need to be validated if the order is the users or the rollbacker is the admin
 
-        //deleting the orders
-        Order::whereIn('id',$deletedOrderId)->delete();
+        $user=User::find($request->user()->id);
 
-        //deleting order request
-        $orderRequest->delete();
 
-        return response(['status'=>200]);
+        if($user->id==$orderRequest->user_Id||$user->authority=='admin'){
+            //geting deleted orders from the table
+            $deletedOrderId=OrderOrderRequest::select('order_id')
+            ->where('order_request_id','=',$orderRequest->id)
+            ->get();
+
+            //deleting the orders
+            Order::whereIn('id',$deletedOrderId)->delete();
+
+            //deleting order request
+            $orderRequest->delete();
+            return response(['status'=>200]);
+
+        }
+
+        return response([
+            "errorMessage"=>"You Are Not allowed",
+            "status"=>401
+        ]);
+        
+
     }
 
 }

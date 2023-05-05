@@ -14,6 +14,14 @@
     flex-direction: column;
 }
 
+.main-order-containers {
+    width: 100%;
+    height: fit-content;
+    padding: 1em;
+    display: flex;
+    flex-direction: column;
+}
+
 .title-bar {
     width: 100%;
     padding: 1em;
@@ -154,6 +162,80 @@
     box-shadow: var(--shadow1);
 }
 
+.container {
+    width: 100%;
+    display: grid;
+    min-height: 20em;
+    grid-template-columns: 1fr 3fr;
+    grid-template-areas: "orderRequest" "orders";
+}
+
+.container .left {
+    grid-area: orderRequest;
+}
+
+.table table tbody tr td .image .profile {
+    border-radius: 50%;
+    width: 2em;
+    height: 2em;
+    object-fit: cover;
+}
+
+.sale form button,
+.abort form button {
+    width: 4em;
+    border: none;
+    padding: .4em .3em;
+    font-size: .8em;
+    font-weight: bolder;
+    cursor: pointer;
+    border-radius: .3em;
+    transition: all ease-in-out .22s;
+    color: aliceblue;
+}
+
+.sale form button:hover,
+.abort form button:hover {
+    box-shadow: var(--shadow1);
+}
+
+.sale form button {
+    background-color: green;
+}
+
+.abort form button {
+    background-color: crimson;
+}
+
+.orderRequestUser {
+    gap: .5em;
+}
+
+.roolback form button {
+    border: none;
+    font-weight: bolder;
+    font-family: var(--font1);
+    background-color: crimson;
+    color: aliceblue;
+    padding: .4em;
+    border-radius: .3em;
+    cursor: pointer;
+    transition: all ease-in-out .22s;
+}
+
+.roolback form button:hover {
+    box-shadow: var(--shadow1);
+}
+
+.total_price {
+    min-width: 7em;
+}
+
+.roolback form .makeitInvert img {
+    width: 1em;
+    filter: invert(100%);
+}
+
 @media(max-width:750px) {
     .edit>a,
     .delete>form button {
@@ -163,10 +245,31 @@
     .delete>form button img {
         width: 1em;
     }
+    .table table {
+        width: 100%;
+    }
+    .table table thead tr td {
+        font-size: .8em;
+    }
     .table table tbody tr td .other-descriptions .name h2 {
         font-size: 1em;
     }
+    .table table tbody tr td .image {
+        width: fit-content;
+    }
     .table table tbody tr td .image img {
         width: 2.5em;
+    }
+    .orderRequestUser {
+        gap: .2em;
+    }
+    .roolback form button {
+        font-size: .8em;
+    }
+    .title-bar h3 {
+        font-size: 1em;
+    }
+    .withPrice {
+        font-size: .8em;
     }
 }

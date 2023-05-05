@@ -33,8 +33,10 @@ export const store = createStore({
         allOrders: [],
         allOrderRequests: [],
         allSoldItems: [],
+        adminTaskCompletionStatus: [],
     },
     getters: {
+        adminTaskCompletionStatus: state => state.adminTaskCompletionStatus,
         allSoldItems: state => state.allSoldItems,
         allOrders: state => state.allOrders,
         allOrderRequests: state => state.allOrderRequests,
@@ -67,6 +69,18 @@ export const store = createStore({
                     } else {
                         return state.carts
                     }
+                case 3:
+                    if (state.searchInput !== 'All' && state.searchInput !== 'all') {
+                        return state.allOrders.filter((order) => order.description.includes(state.searh) || order.name.includes(state.searchInput) || order.brand.includes(state.searchInput) || order.expiredate.includes(state.searchInput) || order.catagory.includes(state.searchInput) || order.email.includes(state.searchInput) || order.phonenumber.includes(state.searchInput) || order.quantity == state.searchInput || order.total_price == state.searchInput)
+                    } else {
+                        return state.allOrders
+                    }
+                case 4:
+                    if (state.searchInput != 'All' && state.searchInput != 'all') {
+                        return state.allSoldItems.filter((item) => item.name.includes(state.searchInput) || item.catagory.includes(state.searchInput) || item.brand.includes(state.searchInput) || item.email.includes(state.searchInput) || item.phonenumber.includes(state.searchInput) || item.expiredate.includes(state.searchInput) || item.price == state.searchInput || item.quantity == state.searchInput || item.total_price == state.searchInput)
+                    } else {
+                        return state.allSoldItems
+                    }
             }
         },
         OrderQueue: state => state.OrderQueue,
@@ -88,6 +102,9 @@ export const store = createStore({
 
     },
     mutations: {
+        setAdminTaskComplitionStatus: (state, payload) => {
+            state.adminTaskCompletionStatus = payload
+        },
         setAllSoldItems: (state, payload) => {
             state.allSoldItems = payload
         },
@@ -115,6 +132,16 @@ export const store = createStore({
         },
         filterDeletedOrder: (state, payload) => {
             state.OrderQueue = state.OrderQueue.filter((order) => order.id != payload)
+        },
+        filterAllOrderRequests: (state, payload) => {
+            state.allOrderRequests = state.allOrderRequests.filter((order) => order.id != payload)
+        },
+        filterAllOrders: (state, payload) => {
+            state.allOrders = state.allOrders.filter((order) => order.id != payload)
+        },
+
+        filterSoldItems: (state, payload) => {
+            state.allSoldItems = state.allSoldItems.filter((item) => item.id != payload)
         },
         setSearchInput: (state, payload) => {
             state.searchInput = payload
@@ -272,11 +299,77 @@ export const store = createStore({
         async deleteOrder(context, id) {
             try {
                 const result = await $api.delete(`order/${id}`)
-                context.commit('filterDeletedOrder', id)
+                if (result.status == 200) {
+                    context.commit('filterDeletedOrder', id)
+                    context.commit('setAdminTaskComplitionStatus', { "message": "Order Deleted Successfully", "status": 1 })
+                } else {
+                    context.commit('setAdminTaskComplitionStatus', { "message": "unable to delete order", "status": 0 })
+                }
             } catch (error) {
                 console.log(error)
             }
         },
+
+
+        async deleteSoldItem(context, id) {
+            try {
+                const result = await $api.delete(`soldItem/${id}`)
+                if (result.status == 200) {
+                    context.commit('filterSoldItems', id)
+                    context.commit('setAdminTaskComplitionStatus', { "message": "Sold Item Deleted Successfully!", "status": 1 })
+                } else {
+                    context.commit('setAdminTaskComplitionStatus', { "message": "unable to delete sold item", "status": 0 })
+                }
+            } catch (error) {
+                console.log(error)
+            }
+        },
+
+        async deleteOrderByAdmin(context, id) {
+            try {
+                const result = await $api.delete(`order/${id}`)
+                if (result.status == 200) {
+                    await context.dispatch('getAllOrders')
+                    context.commit('setAdminTaskComplitionStatus', { "message": "Order Deleted Successfully", "status": 1 })
+                } else {
+                    context.commit('setAdminTaskComplitionStatus', { "message": "unable to delete order", "status": 0 })
+                }
+            } catch (error) {
+                console.log(error)
+            }
+        },
+
+        async rollBackOrder(context, id) {
+            try {
+                const result = await $api.delete(`order/rollback/${id}`)
+                if (result.status == 200) {
+                    context.commit('filterAllOrders', id)
+                    context.commit('setAdminTaskComplitionStatus', { "message": "Order Rolled Back Successfully!", "status": 1 })
+                } else {
+                    context.commit('setAdminTaskComplitionStatus', { "message": "you are not authorized", "status": 0 })
+                }
+
+            } catch (error) {
+                console.log(error)
+            }
+        },
+
+        async sellOrder(context, id) {
+            try {
+
+                const result = await $api.post(`order/sale/${id}`)
+                if (result.status == 200) {
+                    await context.dispatch('getAllOrders')
+                    context.commit('setAdminTaskComplitionStatus', { "message": "Order Selled Successfully!", "status": 1 })
+                } else {
+                    context.commit('setAdminTaskComplitionStatus', { "message": "You Are Not Authorized!", "status": 0 })
+                }
+
+            } catch (error) {
+                console.log(error);
+            }
+        },
+
         async getCarts(context) {
             try {
                 const responce = await $api.get('cart')
@@ -397,6 +490,20 @@ export const store = createStore({
                 } else {
                     console.log(error)
                 }
+            }
+        },
+
+        async handleDeleteItem(context, id) {
+            try {
+                const result = await $api.delete(`item/${id}`)
+
+                if (result.status == 200) {
+                    context.commit('setAdminTaskComplitionStatus', { "message": "Item Is Deleted Successfully!", "status": 1 })
+                } else {
+                    context.commit('setAdminTaskComplitionStatus', { "message": "You Are Not Authorized!", "status": 0 })
+                }
+            } catch (error) {
+                console.log(error)
             }
         },
         async handleLogout(context) {

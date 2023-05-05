@@ -25,37 +25,40 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 
 //this is for normal users
-Route::post('/signup',[AuthController::class,'register']);
-Route::post('/login',[AuthController::class,'login']);
+Route::post('/signup',[AuthController::class,'register']); //don
+Route::post('/login',[AuthController::class,'login']); //done
 
-Route::get('/item',[ItemController::class,'index']);
-Route::get('/item/{item}',[ItemController::class,'show']);
-Route::post('/item/like/{item}',[ItemController::class,'like']);
-Route::post('/item/dislike/{item}',[ItemController::class,'dislike']);
+Route::get('/item',[ItemController::class,'index']); //done
+Route::get('/item/{item}',[ItemController::class,'show']); //done
+Route::post('/item/like/{item}',[ItemController::class,'like']); //must be modified later
+Route::post('/item/dislike/{item}',[ItemController::class,'dislike']); //must be modified later
 
 
 //this is for authenticated 
 Route::group(['middleware'=>['auth:sanctum']],function(){
 
-    Route::get('/order',[OrderController::class,'index']);
-    Route::post('/order',[OrderController::class,'store']);
-    Route::delete('/order/{orderRequest}',[OrderController::class,'destroy']);
+    Route::get('/order',[OrderController::class,'index']); //done
+    Route::post('/order',[OrderController::class,'store']); //done
+    Route::delete('/order/{orderRequest}',[OrderController::class,'destroy']); //done
 
-    Route::get('/cart',[CartController::class,'index']);
-    Route::post('/cart',[CartController::class,'store']);
-    Route::put('/cart/{cart}',[CartController::class,'update']);
-    Route::delete('/cart/{cart}',[CartController::class,'destroy']);
+    Route::get('/cart',[CartController::class,'index']); //done
+    Route::post('/cart',[CartController::class,'store']); //done
+    Route::put('/cart/{cart}',[CartController::class,'update']); //done
+    Route::delete('/cart/{cart}',[CartController::class,'destroy']); //done
 
-    Route::post('/logout',[AuthController::class,'logout']);
-    Route::get('/user',[AuthController::class,'getUser']);
+    Route::post('/logout',[AuthController::class,'logout']); //done
+    Route::get('/user',[AuthController::class,'getUser']); //done
 
-    Route::get('/allUsers',[AdminController::class,'getAllUsers']);
-    Route::get('/allOrders',[AdminController::class,'getAllOrders']);
-    Route::get('/allSoldItems',[AdminController::class,'getSoldItems']);
-    Route::post('/item',[ItemController::class,'store']);
-    Route::put('/item/{item}',[ItemController::class,'update']);
-    Route::delete('/item/{item}',[ItemController::class,'destroy']);
+    Route::get('/allUsers',[AdminController::class,'getAllUsers']); 
+    Route::get('/allOrders',[AdminController::class,'getAllOrders']); //done
+    Route::get('/allSoldItems',[AdminController::class,'getSoldItems']); //done
+    Route::post('/item',[ItemController::class,'store']); //done
+    Route::put('/item/{item}',[ItemController::class,'update']); //done
+    Route::delete('/item/{item}',[ItemController::class,'destroy']); //done
+    Route::post('/order/sale/{orderRequest}',[AdminController::class,'sale']); //done
+    Route::delete('/order/rollback/{order}',[AdminController::class,'rollBackOrderItem']); //done
 
+    Route::delete('/soldItem/{soldItem}',[AdminController::class,'deleteSoldItem']);
 
 });
 

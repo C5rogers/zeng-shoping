@@ -61,7 +61,7 @@ const getItems=async()=>{
                 </thead>
                 <tbody>
                     <tr v-for="(item,index) in store.getters.GrandFilter(1)" :key="index">
-                        <ItemRow :index="index" :item="item" />
+                        <ItemRow :index="index+1" :item="item" />
                     </tr>
                 </tbody>
             </table>
