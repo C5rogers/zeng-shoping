@@ -8,6 +8,31 @@ import VPagination from "@hennge/vue3-pagination";
 import "@hennge/vue3-pagination/dist/vue3-pagination.css";
 import SearchEngine from '../../components/SearchEngine.vue'
 import Empty from '../../components/Empty.vue';
+import PopUp from '../../components/PopUp.vue';
+
+
+const forPopUp=ref({
+	message:'',
+	title:'',
+	type:'',
+	class:'',
+	typeMessage:''
+})
+
+const showPopUpMessage=(result)=>{
+	forPopUp.value.message=result.message
+	forPopUp.value.title=result.title
+	forPopUp.value.type=result.type
+	forPopUp.value.typeMessage=result.typeMessage
+	setTimeout(() => {
+		forPopUp.value.class="showPopUp"
+	}, 1000);
+ }
+
+
+ const handleClosePopUp=()=>{
+	forPopUp.value.class="hidePopUp"
+ }
 
 
 
@@ -39,9 +64,19 @@ const getItems=async()=>{
     }
 }
 
+const handleShowItemPopUpmessage=(result)=>{
+    showPopUpMessage({
+        message:result.message,
+        title:result.title,
+        type:result.type,
+        typeMessage:result.typeMessage
+    })
+}
+
 </script>
 
 <template>
+    <PopUp :message="forPopUp.message" :class="forPopUp.class" :title="forPopUp.title" :type="forPopUp.type"  @close-popup="handleClosePopUp" :typeMessage="forPopUp.typeMessage" />
     <Loader v-if="showLoader" />
     <div class="main-admin-data-container">
         <SearchEngine />
@@ -61,7 +96,7 @@ const getItems=async()=>{
                 </thead>
                 <tbody>
                     <tr v-for="(item,index) in store.getters.GrandFilter(1)" :key="index">
-                        <ItemRow :index="index+1" :item="item" />
+                        <ItemRow :index="index+1" :item="item" @show-deleted-item-popup="handleShowItemPopUpmessage" />
                     </tr>
                 </tbody>
             </table>

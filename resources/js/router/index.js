@@ -35,6 +35,13 @@ const routes = [{
             import ('../pages/product/Create.vue'),
         meta: {
             requiresAuth: true
+        },
+        beforeEnter: (to, from, next) => {
+            if (store.getters.userPrevilage === 'admin') {
+                next()
+            } else {
+                router.push({ name: 'home' })
+            }
         }
     },
 
@@ -90,6 +97,13 @@ const routes = [{
             import ('../pages/admin/AllUser.vue'),
         meta: {
             requiresAuth: true
+        },
+        beforeEnter: (to, from, next) => {
+            if (store.getters.userPrevilage === 'admin') {
+                next()
+            } else {
+                router.push({ name: 'home' })
+            }
         }
     },
     {
@@ -99,6 +113,13 @@ const routes = [{
             import ('../pages/admin/AllProducts.vue'),
         meta: {
             requiresAuth: true
+        },
+        beforeEnter: (to, from, next) => {
+            if (store.getters.userPrevilage === 'admin') {
+                next()
+            } else {
+                router.push({ name: 'home' })
+            }
         }
     },
     {
@@ -108,6 +129,13 @@ const routes = [{
             import ('../pages/admin/EditProduct.vue'),
         meta: {
             requiresAuth: true
+        },
+        beforeEnter: (to, from, next) => {
+            if (store.getters.userPrevilage === 'admin') {
+                next()
+            } else {
+                router.push({ name: 'home' })
+            }
         }
     },
     {
@@ -117,6 +145,13 @@ const routes = [{
             import ('../pages/admin/AllOrders.vue'),
         meta: {
             requiresAuth: true
+        },
+        beforeEnter: (to, from, next) => {
+            if (store.getters.userPrevilage === 'admin') {
+                next()
+            } else {
+                router.push({ name: 'home' })
+            }
         }
     },
     {
@@ -126,6 +161,13 @@ const routes = [{
             import ('../pages/admin/AllSoldItems.vue'),
         meta: {
             requiresAuth: true
+        },
+        beforeEnter: (to, from, next) => {
+            if (store.getters.userPrevilage === 'admin') {
+                next()
+            } else {
+                router.push({ name: 'home' })
+            }
         }
     }
 ]

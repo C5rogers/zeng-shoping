@@ -6,6 +6,7 @@ import PopUp from '../../components/PopUp.vue';
 import Loader from '../../components/Loader.vue';
 import SearchEngine from '../../components/SearchEngine.vue';
 import SoldItemRow from '../../components/SoldItemRow.vue';
+import SalesReportGraph from '../../components/SalesReportGraph.vue';
 
 
 const showLoader=ref(true)
@@ -67,7 +68,9 @@ const handleShowPopUpMessage=(result)=>{
         </div>
         <div class="container" v-if="store.getters.GrandFilter(4).length>0">
             <div class="left">
-
+                <div class="table">
+                    <SalesReportGraph />
+                </div>
             </div>
             <div class="right">
                 <div class="table">

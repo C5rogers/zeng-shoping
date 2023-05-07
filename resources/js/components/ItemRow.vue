@@ -1,17 +1,64 @@
 <script setup>
 import FiveStarRating from './FiveStarRating.vue';
+import RemoveConfirmation from './RemoveConfirmation.vue';
+import { ref } from 'vue';
+import { useStore } from 'vuex';
+
+
+const store=useStore()
+const showConfirmation=ref(false)
+const forConfirmation=ref({
+    deletedItemMessage:'',
+    deletedItemId:'',
+    deleteItemTitle:''
+})
+
+const emit=defineEmits(['show-deleted-item-popup'])
+
+
 const props=defineProps({
     index:Number,
     item:Object
 })
 
 const handleDeleteRequest=(item)=>{
+    forConfirmation.value.deletedItemMessage="Do You Really Want To Delete Item: "+item.name+" From The Site?"
+    forConfirmation.value.deletedItemId=item.id
+    forConfirmation.value.deleteItemTitle="Deleting Item From Site!"
+    showConfirmation.value=true
+}
 
+const handleDeleteItemConfirmation=async(result)=>{
+    showConfirmation.value=false
+    if(result.confStatus==true){
+        await store.dispatch('handleDeleteItem',result.confTo)
+        if(store.getters.adminTaskCompletionStatus.status==1){
+            const popupMessage=store.getters.adminTaskCompletionStatus.message
+            store.commit('setAdminTaskComplitionStatus',[])
+            emit('show-deleted-item-popup',{
+                message:popupMessage,
+                title:"Deleting Item",
+                type:"success",
+                typeMessage:"SUCCESS"
+            })
+
+        }else{
+            const popupMessageTwo=store.getters.adminTaskCompletionStatus.message
+            store.commit('setAdminTaskComplitionStatus',[])
+            emit('show-deleted-item-popup',{
+                message:popupMessageTwo,
+                title:'Deleting Item',
+                type:'error',
+                typeMessage:'ERROR'
+            })
+        }
+    }
 }
 
 </script>
 
 <template>
+    <RemoveConfirmation :confirm-to="forConfirmation.deletedItemId" :confirmation-message="forConfirmation.deletedItemMessage" :title="forConfirmation.deleteItemTitle" v-if="showConfirmation" @confirmation-result="handleDeleteItemConfirmation" />
 
     <td class="number">{{ index }}</td>
     <td class="withFlex"> 

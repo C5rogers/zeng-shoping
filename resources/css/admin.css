@@ -272,4 +272,7 @@
     .withPrice {
         font-size: .8em;
     }
+    .container {
+        grid-template-columns: 1fr;
+    }
 }

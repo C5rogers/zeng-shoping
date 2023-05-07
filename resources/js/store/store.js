@@ -34,8 +34,10 @@ export const store = createStore({
         allOrderRequests: [],
         allSoldItems: [],
         adminTaskCompletionStatus: [],
+        adminSalesReportData: [],
     },
     getters: {
+        adminSalesReportData: state => state.adminSalesReportData,
         adminTaskCompletionStatus: state => state.adminTaskCompletionStatus,
         allSoldItems: state => state.allSoldItems,
         allOrders: state => state.allOrders,
@@ -59,25 +61,25 @@ export const store = createStore({
             switch (payload) {
                 case 1:
                     if (state.searchInput !== 'All' && state.searchInput !== 'all') {
-                        return state.allItems.filter((item) => item.name.includes(state.searchInput) || item.description.includes(state.searchInput) || item.price == state.searchInput || item.catagory.includes(state.searchInput) || item.id == state.searchInput || item.brand.includes(state.searchInput))
+                        return state.allItems.filter((item) => item.name.includes(state.searchInput.toLowerCase()) || item.name.includes(state.searchInput) || item.description.includes(state.searchInput.toLowerCase()) || item.description.includes(state.searchInput) || item.price == state.searchInput || item.catagory.includes(state.searchInput.toLowerCase()) || item.catagory.includes(state.searchInput) || item.id == state.searchInput || item.brand.includes(state.searchInput.toLowerCase()) || item.brand.includes(state.searchInput))
                     } else {
                         return state.allItems
                     }
                 case 2:
                     if (state.searchInput !== 'All' && state.searchInput !== 'all') {
-                        return state.carts.filter((cart) => cart.name.includes(state.searchInput) || cart.catagory.includes(state.searchInput) || cart.price == state.searchInput || cart.brand.includes(state.searchInput) || cart.id == state.searchInput || cart.brand.includes(state.searchInput))
+                        return state.carts.filter((cart) => cart.name.includes(state.searchInput.toLowerCase()) || cart.name.includes(state.searchInput) || cart.catagory.includes(state.searchInput.toLowerCase()) || cart.catagory.includes(state.searchInput) || cart.price == state.searchInput || cart.brand.includes(state.searchInput.toLowerCase()) || cart.brand.includes(state.searchInput) || cart.id == state.searchInput || cart.brand.includes(state.searchInput.toLowerCase()) || cart.brand.includes(state.searchInput))
                     } else {
                         return state.carts
                     }
                 case 3:
                     if (state.searchInput !== 'All' && state.searchInput !== 'all') {
-                        return state.allOrders.filter((order) => order.description.includes(state.searh) || order.name.includes(state.searchInput) || order.brand.includes(state.searchInput) || order.expiredate.includes(state.searchInput) || order.catagory.includes(state.searchInput) || order.email.includes(state.searchInput) || order.phonenumber.includes(state.searchInput) || order.quantity == state.searchInput || order.total_price == state.searchInput)
+                        return state.allOrders.filter((order) => order.description.includes(state.searchInput.toLowerCase()) || order.description.includes(state.searchInput) || order.name.includes(state.searchInput.toLowerCase()) || order.name.includes(state.searchInput) || order.brand.includes(state.searchInput.toLowerCase()) || order.brand.includes(state.searchInput) || order.expiredate.includes(state.searchInput.toLowerCase()) || order.expiredate.includes(state.searchInput) || order.catagory.includes(state.searchInput.toLowerCase()) || order.catagory.includes(state.searchInput) || order.email.includes(state.searchInput.toLowerCase()) || order.email.includes(state.searchInput) || order.phonenumber.includes(state.searchInput.toLowerCase()) || order.phonenumber.includes(state.searchInput) || order.quantity == state.searchInput || order.total_price == state.searchInput)
                     } else {
                         return state.allOrders
                     }
                 case 4:
                     if (state.searchInput != 'All' && state.searchInput != 'all') {
-                        return state.allSoldItems.filter((item) => item.name.includes(state.searchInput) || item.catagory.includes(state.searchInput) || item.brand.includes(state.searchInput) || item.email.includes(state.searchInput) || item.phonenumber.includes(state.searchInput) || item.expiredate.includes(state.searchInput) || item.price == state.searchInput || item.quantity == state.searchInput || item.total_price == state.searchInput)
+                        return state.allSoldItems.filter((item) => item.name.includes(state.searchInput.toLowerCase()) || item.name.includes(state.searchInput) || item.catagory.includes(state.searchInput.toLowerCase()) || item.catagory.includes(state.searchInput) || item.brand.includes(state.searchInput.toLowerCase()) || item.brand.includes(state.searchInput) || item.email.includes(state.searchInput.toLowerCase()) || item.email.includes(state.searchInput) || item.phonenumber.includes(state.searchInput.toLowerCase()) || item.phonenumber.includes(state.searchInput) || item.expiredate.includes(state.searchInput.toLowerCase()) || item.expiredate.includes(state.searchInput) || item.price == state.searchInput || item.quantity == state.searchInput || item.total_price == state.searchInput)
                     } else {
                         return state.allSoldItems
                     }
@@ -102,6 +104,9 @@ export const store = createStore({
 
     },
     mutations: {
+        setAdminSalesReportData: (state, payload) => {
+            state.adminSalesReportData = payload
+        },
         setAdminTaskComplitionStatus: (state, payload) => {
             state.adminTaskCompletionStatus = payload
         },
@@ -138,6 +143,9 @@ export const store = createStore({
         },
         filterAllOrders: (state, payload) => {
             state.allOrders = state.allOrders.filter((order) => order.id != payload)
+        },
+        filterDeletedItem: (state, payload) => {
+            state.allItems = state.allItems.filter((item) => item.id != payload)
         },
 
         filterSoldItems: (state, payload) => {
@@ -235,6 +243,7 @@ export const store = createStore({
                 const responce = await $api.get('allSoldItems')
                 if (responce.status === 200) {
                     context.commit('setAllSoldItems', responce.data.sold_items)
+                    context.commit('setAdminSalesReportData', responce.data.sales_report)
                 } else {
                     router.push({ name: 'home' })
                 }
@@ -274,7 +283,7 @@ export const store = createStore({
         async getAllItems(context) {
             try {
                 const result = await axios.get('item?page=' + context.state.itemPage)
-                context.state.itemPageCount = parseInt(result.data.total / result.data.to)
+                context.state.itemPageCount = parseInt(result.data.total / result.data.to + 1)
                 context.commit('setAllItems', result.data.data)
             } catch (error) {
                 console.log(error)
@@ -499,6 +508,8 @@ export const store = createStore({
 
                 if (result.status == 200) {
                     context.commit('setAdminTaskComplitionStatus', { "message": "Item Is Deleted Successfully!", "status": 1 })
+                    context.commit('filterDeletedItem', id)
+
                 } else {
                     context.commit('setAdminTaskComplitionStatus', { "message": "You Are Not Authorized!", "status": 0 })
                 }

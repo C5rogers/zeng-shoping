@@ -10,6 +10,7 @@ use App\Models\Item;
 use App\Models\OrderRequest;
 use Illuminate\Support\Facades\DB;
 use App\Models\OrderOrderRequest;
+use App\Models\SalesReport;
 use App\Models\SoldItem;
 
 
@@ -58,9 +59,12 @@ class AdminController extends Controller
              //need the user information and also the item information
             //  combine the item and also the user and also the sold item tables 3 tables
             $soldItems=DB::table('items')->join('sold_items','items.id','=','sold_items.item_id')->join('users','users.id','=','sold_items.user_id')->select('sold_items.total_price','sold_items.id','sold_items.quantity','items.name','items.image','items.price','items.expiredate','items.catagory','items.brand','items.rating','users.email','users.phonenumber','users.profile')->get();
+            //this is where we select out some data from the sales report table to send
+            $salesReport=SalesReport::select('year','month','ammount')->get();
 
             return response([
                 'sold_items'=>$soldItems,
+                'sales_report'=>$salesReport,
                 "status"=>200
             ]);
         }
@@ -91,6 +95,20 @@ class AdminController extends Controller
                                 $order->delete();
                             });
 
+                            //this is where we add the sales report for the graph to be seen
+                            $salesReport=SalesReport::latest()->first();
+
+                            
+                            if($salesReport && $salesReport->year==date('Y') && $salesReport->month==date('M')){
+                                $fild['ammount']=$salesReport->ammount+1;
+                                $salesReport->update($fild);
+                            }else{
+                                $fild['year']=date('Y');
+                                $fild['month']=date('M');
+                                $fild['ammount']=1;
+                                SalesReport::create($fild);
+                            }
+                            
                             $orderRequest->delete();
 
                             return response([
