@@ -37,9 +37,9 @@ Route::post('/item/dislike/{item}',[ItemController::class,'dislike']); //must be
 //this is for authenticated 
 Route::group(['middleware'=>['auth:sanctum']],function(){
 
-    Route::get('/order',[OrderController::class,'index']); //done
-    Route::post('/order',[OrderController::class,'store']); //done
-    Route::delete('/order/{orderRequest}',[OrderController::class,'destroy']); //done
+    Route::get('/order',[OrderController::class,'index']); //done //only for active user
+    Route::post('/order',[OrderController::class,'store']); //done //only for active user
+    Route::delete('/order/{orderRequest}',[OrderController::class,'destroy']); //done //only for active user
 
     Route::get('/cart',[CartController::class,'index']); //done
     Route::post('/cart',[CartController::class,'store']); //done
@@ -58,7 +58,9 @@ Route::group(['middleware'=>['auth:sanctum']],function(){
     Route::post('/order/sale/{orderRequest}',[AdminController::class,'sale']); //done
     Route::delete('/order/rollback/{order}',[AdminController::class,'rollBackOrderItem']); //done
 
-    Route::delete('/soldItem/{soldItem}',[AdminController::class,'deleteSoldItem']);
+    Route::delete('/soldItem/{soldItem}',[AdminController::class,'deleteSoldItem']);//done
+    Route::put('/activate/{user}',[AdminController::class,'activateUser']);
+    Route::put('/deactivate/{user}',[AdminController::class,'deActivateUser']);
 
 });
 

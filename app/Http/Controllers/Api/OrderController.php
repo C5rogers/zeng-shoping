@@ -15,7 +15,19 @@ class OrderController extends Controller
 {
     //this will return the user specific order for the user itself
     public function index(Request $request){
-        return response()->json(OrderRequest::where('user_id',$request->user()->id)->get());
+
+        $user=User::find($request->user()->id);
+        if($user->status=='active'){
+            // return response()->json(OrderRequest::where('user_id',$request->user()->id)->get());
+            return response(['orders'=>OrderRequest::where('user_id',$request->user()->id)->get(),'status'=>200]);
+        }
+
+            return response([
+                'status'=>400,
+                'message'=>'Sorry You\'r Account Has Been Blocked By The Admin Please Contact Him/Her'
+            ]);
+        
+
     }
 
     //this will return all order from the order tables
@@ -25,6 +37,10 @@ class OrderController extends Controller
 
     //this will store the order request by migrating from carts table
     public function store(Request $request){
+
+        $user=User::find($request->user()->id);
+        if($user->status=='active'){
+
             $fild['overallprice']=$request['overallprice'];
             $fild['user_id']=$request->user()->id;
             $order=OrderRequest::create($fild);
@@ -50,6 +66,12 @@ class OrderController extends Controller
 
                 return response()->json(['order'=>$order,'status'=>201]);
 
+        }
+        return response([
+            'status'=>400,
+            'message'=>'Sorry You\'r Account Has Been Blocked By The Admin Please Contact Him/Her'
+        ]);
+        
     }
 
     public function destroy(Request $request,OrderRequest $orderRequest){
@@ -62,16 +84,24 @@ class OrderController extends Controller
 
         if($user->id==$orderRequest->user_Id||$user->authority=='admin'){
             //geting deleted orders from the table
-            $deletedOrderId=OrderOrderRequest::select('order_id')
-            ->where('order_request_id','=',$orderRequest->id)
-            ->get();
-
-            //deleting the orders
-            Order::whereIn('id',$deletedOrderId)->delete();
-
-            //deleting order request
-            $orderRequest->delete();
-            return response(['status'=>200]);
+            if($user->status=='active'){
+                $deletedOrderId=OrderOrderRequest::select('order_id')
+                ->where('order_request_id','=',$orderRequest->id)
+                ->get();
+    
+                //deleting the orders
+                Order::whereIn('id',$deletedOrderId)->delete();
+    
+                //deleting order request
+                $orderRequest->delete();
+                return response(['status'=>200]);
+            }else{
+                return response([
+                    'status'=>400,
+                    'message'=>'Sorry You\'r Account Has Been Blocked By The Admin Please Contact Him/Her'
+                ]);
+            }
+           
 
         }
 

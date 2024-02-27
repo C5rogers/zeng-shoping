@@ -28,7 +28,11 @@ onMounted(async () => {
 })
 
 const filterOrder=computed(()=>{
-    return store.getters.OrderQueue.filter((order)=>order.id==orderSearch.value||order.created_at.includes(orderSearch.value)||order.overallprice==orderSearch.value)
+    if(store.getters.OrderQueue){
+        return store.getters.OrderQueue.filter((order)=>order.id==orderSearch.value||order.created_at.includes(orderSearch.value)||order.overallprice==orderSearch.value)
+    }
+    return []
+
 })
 
 const abortOrder=(order)=>{
@@ -42,13 +46,21 @@ const handleConfirmation=async (result)=>{
     showConfirmation.value=false
     if(result.confStatus==true){
         await store.dispatch('deleteOrder',result.confTo)
-
-        emit('show-pop-up-message',{
-            message:"Order Aborted Successfully!",
-            title:"Aborting Order",
-            type:"Error",
-            typeMessage:"ABORT"
+            if(store.getters.activeUserTaskCompletionStatus && store.getters.activeUserTaskCompletionStatus.status==0){
+                emit('show-pop-up-message',{
+                message:store.getters.activeUserTaskCompletionStatus.message,
+                title:"Forbiden Account",
+                type:"Error",
+                typeMessage:"FORBIDDEN"
+                })
+            }else{
+                emit('show-pop-up-message',{
+                    message:"Order Aborted Successfully!",
+                    title:"Aborting Order",
+                    type:"Error",
+                    typeMessage:"ABORT"
         })
+    }
     }
 }
 

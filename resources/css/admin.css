@@ -236,6 +236,45 @@
     filter: invert(100%);
 }
 
+table tbody tr td .action form button {
+    width: 5em;
+    padding: .5em .3em;
+    border: none;
+    margin-bottom: .2em;
+    cursor: pointer;
+    border-radius: .3em;
+    font-family: var(--font1);
+    font-weight: bolder;
+    color: aliceblue;
+    transition: all ease-in-out .22s;
+}
+
+.green {
+    color: green;
+    font-family: var(--font1);
+    font-size: 1.2em;
+    font-weight: bolder;
+}
+
+.red {
+    color: red;
+    font-family: var(--font1);
+    font-size: 1.2em;
+    font-weight: bolder;
+}
+
+table tbody tr td .action form button:hover {
+    box-shadow: var(--shadow1);
+}
+
+.activate {
+    background-color: green;
+}
+
+.ban {
+    background-color: crimson;
+}
+
 @media(max-width:750px) {
     .edit>a,
     .delete>form button {
@@ -250,6 +289,9 @@
     }
     .table table thead tr td {
         font-size: .8em;
+    }
+    .table table tbody tr td {
+        font-size: .5em;
     }
     .table table tbody tr td .other-descriptions .name h2 {
         font-size: 1em;

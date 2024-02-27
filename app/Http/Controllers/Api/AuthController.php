@@ -24,6 +24,7 @@ class AuthController extends Controller
             $image=asset('storage/'.$image);
             $fild['profile']=$image;
         }
+        $fild['status']='active';
         $fild['password']=bcrypt($fild['password']);
         $fild['authority']="user";
         $user=User::create($fild);

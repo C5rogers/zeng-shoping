@@ -174,4 +174,38 @@ class AdminController extends Controller
             'status'=>401
         ]);
     }
+
+    public function activateUser(Request $request,User $user){
+        $admin=User::find($request->user()->id);
+        if($admin && $admin->authority=='admin' && $user->authority=='user'){
+            $fild['status']='active';
+            $user->update($fild);
+            return response([
+                'user'=>$user,
+                'status'=>200
+            ]);
+        }
+
+        return response([
+            'message'=>'You Are Not Authorized',
+            'status'=>401
+        ]);
+    }
+
+    public function deActivateUser(Request $request,User $user){
+        $admin=User::find($request->user()->id);
+        if($admin && $admin->authority=='admin' && $user->authority=='user'){
+            $fild['status']='baned';
+            $user->update($fild);
+            return response([
+                'user'=>$user,
+                'status'=>200
+            ]);
+        }
+
+        return response([
+            'message'=>'You Are Not Authorized!',
+            'status'=>401
+        ]);
+    }
 }

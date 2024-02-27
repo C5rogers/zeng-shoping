@@ -25,7 +25,7 @@ class User extends Authenticatable
         'profile',
         'phonenumber',
         'authority',
-
+        'status'
     ];
 
     /**

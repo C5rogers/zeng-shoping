@@ -39,14 +39,24 @@ onMounted(async()=>{
 
  const order=async()=>{
 	orderForm.value.overallprice=parseFloat(store.getters.totalPrice)
-	store.dispatch('createOrder',orderForm.value)
-    await store.dispatch('getOrders')
-	showPopUpMessage({
-		message:'Order Created Successfully!',
-		title:'Ordering Carts',
-		type:'success',
-		typeMessage:'SUCCESS'
-	})
+	await store.dispatch('createOrder',orderForm.value)
+	if(store.getters.activeUserTaskCompletionStatus && store.getters.activeUserTaskCompletionStatus.status==0){
+		showPopUpMessage({
+			message:store.getters.activeUserTaskCompletionStatus.message,
+			title:'Baned Account!',
+			type:'error',
+			typeMessage:'FORBIDEN'
+		})
+	}else{
+		await store.dispatch('getOrders')
+		showPopUpMessage({
+			message:'Order Created Successfully!',
+			title:'Ordering Carts',
+			type:'success',
+			typeMessage:'SUCCESS'
+		})
+	}
+   
  }
 
  const showPopUpMessage=(result)=>{

@@ -35,8 +35,10 @@ export const store = createStore({
         allSoldItems: [],
         adminTaskCompletionStatus: [],
         adminSalesReportData: [],
+        activeUserTaskCompletionStatus: [],
     },
     getters: {
+        activeUserTaskCompletionStatus: state => state.activeUserTaskCompletionStatus,
         adminSalesReportData: state => state.adminSalesReportData,
         adminTaskCompletionStatus: state => state.adminTaskCompletionStatus,
         allSoldItems: state => state.allSoldItems,
@@ -83,6 +85,12 @@ export const store = createStore({
                     } else {
                         return state.allSoldItems
                     }
+                case 5:
+                    if (state.searchInput != 'All' && state.searchInput != 'all') {
+                        return state.allUsers.filter((user) => user.name.includes(state.searchInput) || user.email.includes(state.searchInput) || user.phonenumber.includes(state.searchInput) || user.status.includes(state.searchInput) || user.authority.includes(state.searchInput))
+                    } else {
+                        return state.allUsers
+                    }
             }
         },
         OrderQueue: state => state.OrderQueue,
@@ -104,6 +112,9 @@ export const store = createStore({
 
     },
     mutations: {
+        setActiveUserTaskComplitionStatus: (state, payload) => {
+            state.activeUserTaskCompletionStatus = payload
+        },
         setAdminSalesReportData: (state, payload) => {
             state.adminSalesReportData = payload
         },
@@ -234,8 +245,6 @@ export const store = createStore({
         updateAllItemsItem: (state) => (payload) => {
             state.allItems.filter((item) => item.id === payload.id ? payload : item);
         }
-
-
     },
     actions: {
         async getAllSoldItems(context) {
@@ -257,6 +266,8 @@ export const store = createStore({
                 if (responce.status === 200) {
                     context.commit('setAllOrders', responce.data.orders)
                     context.commit('setAllOrderRequests', responce.data.orderRequests)
+                } else if (responce.status === 400) {
+                    context.commit('setActiveUserTaskComplitionStatus', { "message": responce.data.message, "status": 0 })
                 } else {
                     router.push({ name: 'home' })
                 }
@@ -292,7 +303,11 @@ export const store = createStore({
         async getOrders(context) {
             try {
                 const result = await $api.get('order')
-                context.commit('setOrderQueue', result.data)
+                if (result.status == 200) {
+                    context.commit('setOrderQueue', result.data.orders)
+                } else if (result.status === 400) {
+                    context.commit('setActiveUserTaskComplitionStatus', { "message": result.data.message, "status": 0 })
+                }
             } catch (error) {
                 console.log(error)
             }
@@ -300,7 +315,11 @@ export const store = createStore({
         async createOrder(context, form) {
             try {
                 const result = await $api.post('order', form)
-                context.commit('setCarts', [])
+                if (result.status === 201) {
+                    context.commit('setCarts', [])
+                } else if (result.status === 400) {
+                    context.commit('setActiveUserTaskComplitionStatus', { "message": result.data.message, "status": 0 })
+                }
             } catch (error) {
                 console.log(error)
             }
@@ -311,6 +330,8 @@ export const store = createStore({
                 if (result.status == 200) {
                     context.commit('filterDeletedOrder', id)
                     context.commit('setAdminTaskComplitionStatus', { "message": "Order Deleted Successfully", "status": 1 })
+                } else if (result.status === 400) {
+                    context.commit('setActiveUserTaskComplitionStatus', { "message": result.data.message, "status": 0 })
                 } else {
                     context.commit('setAdminTaskComplitionStatus', { "message": "unable to delete order", "status": 0 })
                 }
@@ -328,6 +349,35 @@ export const store = createStore({
                     context.commit('setAdminTaskComplitionStatus', { "message": "Sold Item Deleted Successfully!", "status": 1 })
                 } else {
                     context.commit('setAdminTaskComplitionStatus', { "message": "unable to delete sold item", "status": 0 })
+                }
+            } catch (error) {
+                console.log(error)
+            }
+        },
+
+        async activateUser(context, id) {
+            try {
+                const result = await $api.put(`activate/${id}`)
+                if (result.status == 200) {
+
+                    context.state.allUsers = context.state.allUsers.map((user) => user.id === id ? {...user, status: result.data.user.status } : user)
+                    context.commit('setAdminTaskComplitionStatus', { "message": "User Activated Successfully!", "status": 1 })
+                } else {
+                    context.commit('setAdminTaskComplitionStatus', { "message": "unable to activate user", "status": 0 });
+                }
+            } catch (error) {
+                console.log(error)
+            }
+        },
+        async deActivateUser(context, id) {
+            try {
+                const result = await $api.put(`deactivate/${id}`)
+                if (result.status == 200) {
+
+                    context.state.allUsers = context.state.allUsers.map((user) => user.id === id ? {...user, status: result.data.user.status } : user)
+                    context.commit('setAdminTaskComplitionStatus', { "message": "User Deactivated Successfully!", "status": 1 })
+                } else {
+                    context.commit('setAdminTaskComplitionStatus', { "message": "unable to deactivate user", "status": 0 })
                 }
             } catch (error) {
                 console.log(error)
